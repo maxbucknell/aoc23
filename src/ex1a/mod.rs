@@ -76,6 +76,6 @@ mod tests {
 
     #[test]
     fn test_calibrate_from_file() {
-        assert_eq!(calibrate_from_file("1-example.txt"), Ok(142));
+        assert_eq!(calibrate_from_file("1a-example.txt"), Ok(142));
     }
 }

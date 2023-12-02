@@ -10,3 +10,4 @@ pub(crate) struct Input;
 
 
 pub mod ex1a;
+pub mod ex1b;
