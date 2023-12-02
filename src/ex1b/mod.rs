@@ -46,13 +46,16 @@ fn calibrate_value(input: &str) -> Result<u64, String> {
     let mut last: Option<u64> = None;
 
     for (idx, _) in input.char_indices() {
-
         if let Some(digit) = extract_digit_from_start(&input[idx..]) {
-            if first == None {
-                first = Some(u64::from(digit));
-            }
+            first = Some(u64::from(digit));
+            break;
+        }
+    }
 
+    for (idx, _) in input.char_indices().rev() {
+        if let Some(digit) = extract_digit_from_end(&input[..(idx+1)]) {
             last = Some(u64::from(digit));
+            break;
         }
     }
 
@@ -106,6 +109,50 @@ fn extract_digit_from_start(input: &str) -> Option<u64> {
     }
 }
 
+fn extract_digit_from_end(input: &str) -> Option<u64> {
+    if input.ends_with("0") {
+        Some(0)
+    } else if input.ends_with("1") {
+        Some(1)
+    } else if input.ends_with("2") {
+        Some(2)
+    } else if input.ends_with("3") {
+        Some(3)
+    } else if input.ends_with("4") {
+        Some(4)
+    } else if input.ends_with("5") {
+        Some(5)
+    } else if input.ends_with("6") {
+        Some(6)
+    } else if input.ends_with("7") {
+        Some(7)
+    } else if input.ends_with("8") {
+        Some(8)
+    } else if input.ends_with("9") {
+        Some(9)
+    } else if input.ends_with("one") {
+        Some(1)
+    } else if input.ends_with("two") {
+        Some(2)
+    } else if input.ends_with("three") {
+        Some(3)
+    } else if input.ends_with("four") {
+        Some(4)
+    } else if input.ends_with("five") {
+        Some(5)
+    } else if input.ends_with("six") {
+        Some(6)
+    } else if input.ends_with("seven") {
+        Some(7)
+    } else if input.ends_with("eight") {
+        Some(8)
+    } else if input.ends_with("nine") {
+        Some(9)
+    } else {
+        None
+    }
+}
+
 
 #[cfg(test)]
 mod tests {
@@ -123,6 +170,19 @@ mod tests {
         assert_eq!(extract_digit_from_start("zoneight234"), None);
         assert_eq!(extract_digit_from_start("oneight234"), Some(1));
         assert_eq!(extract_digit_from_start("7pqrstsixteen"), Some(7));
+    }
+
+    #[test]
+    fn test_extract_digit_from_end() {
+        assert_eq!(extract_digit_from_end("two1nine"), Some(9));
+        assert_eq!(extract_digit_from_end("eightwothree"), Some(3));
+        assert_eq!(extract_digit_from_end("abcone2threexyz"), None);
+        assert_eq!(extract_digit_from_end("abcone2three"), Some(3));
+        assert_eq!(extract_digit_from_end("xtwone3four"), Some(4));
+        assert_eq!(extract_digit_from_end("4nineeightseven2"), Some(2));
+        assert_eq!(extract_digit_from_end("zoneight234"), Some(4));
+        assert_eq!(extract_digit_from_end("7pqrstsixteen"), None);
+        assert_eq!(extract_digit_from_end("7pqrstsix"), Some(6));
     }
 
     #[test]

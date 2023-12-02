@@ -47,11 +47,15 @@ fn calibrate_value(input: &str) -> Result<u64, String> {
 
     for char in input.chars() {
         if let Some(digit) = char.to_digit(10) {
-            if first == None {
-                first = Some(u64::from(digit));
-            }
+            first = Some(u64::from(digit));
+            break;
+        }
+    }
 
+    for char in input.chars().rev() {
+        if let Some(digit) = char.to_digit(10) {
             last = Some(u64::from(digit));
+            break;
         }
     }
 
