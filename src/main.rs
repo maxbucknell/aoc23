@@ -1,6 +1,7 @@
 use clap::{Parser, Subcommand};
 
-use advent_of_code_2023::{Ex1A, Solution};
+use advent_of_code_2023::Solution;
+use advent_of_code_2023::ex1a::Ex1A;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
