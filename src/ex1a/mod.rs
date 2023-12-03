@@ -1,5 +1,8 @@
-use crate::{Input, Solution};
+use crate::Solution;
 use itertools::Itertools;
+use std::io;
+use std::io::BufRead;
+use std::ops::Add;
 
 pub struct Ex1A {
 }
@@ -12,7 +15,8 @@ impl Ex1A {
 
 impl Solution for Ex1A {
     fn solve(&self) -> String {
-        let result = calibrate_from_file("1.txt");
+        let stream = io::stdin().lock();
+        let result = calibrate_from_stream(stream);
 
         match result {
             Ok(value) => value.to_string(),
@@ -21,24 +25,38 @@ impl Solution for Ex1A {
     }
 }
 
-fn calibrate_from_file(path: &str) -> Result<u64, String> {
-    let input = Input::get(path);
+struct Input<T: BufRead> {
+    line: String,
+    stream: T
+}
 
-    if input.is_none() {
-        return Err(format!("Could not find find in inputs: {}.", path));
+impl<T: BufRead> Input<T> {
+    pub fn new(stream: T) -> Self {
+        Self {
+            stream,
+            line: String::new()
+        }
     }
+}
 
-    let input = input.unwrap();
-    let input = std::str::from_utf8(input.data.as_ref());
+impl<T: BufRead> Iterator for Input<T> {
+    type Item = Result<u64, String>;
 
-    if input.is_err() {
-        return Err(format!("{:?}", input.unwrap_err()));
+    fn next(&mut self) -> Option<Self::Item> {
+        self.line.clear();
+
+        match self.stream.read_line(&mut self.line) {
+            Ok(0) => None,
+            Ok(_) => Some(calibrate_value(&self.line)),
+            Err(err) => Some(Err(format!("{:?}", err)))
+        }
     }
+}
 
-    input.unwrap()
-        .lines()
-        .map(|line| calibrate_value(line))
-        .fold_ok(0, |value, acc| value + acc)
+fn calibrate_from_stream(stream: impl BufRead) -> Result<u64, String> {
+    let mut input = Input::new(stream);
+
+    input.fold_ok(0u64, Add::add)
 }
 
 fn calibrate_value(input: &str) -> Result<u64, String> {
@@ -79,7 +97,13 @@ mod tests {
     }
 
     #[test]
-    fn test_calibrate_from_file() {
-        assert_eq!(calibrate_from_file("1a-example.txt"), Ok(142));
+    fn test_calibrate_from_stream() {
+        let stream = "1abc2
+pqr3stu8vwx
+a1b2c3d4e5f
+treb7uchet
+".as_bytes();
+
+        assert_eq!(calibrate_from_stream(stream), Ok(142));
     }
 }

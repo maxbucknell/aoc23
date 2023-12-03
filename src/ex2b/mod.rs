@@ -1,5 +1,8 @@
-use crate::{Input, Solution};
+use crate::Solution;
 use itertools::Itertools;
+use std::io;
+use std::io::BufRead;
+use std::ops::Add;
 
 use crate::ex2::game::Game;
 
@@ -14,7 +17,8 @@ impl Ex2B {
 
 impl Solution for Ex2B {
     fn solve(&self) -> String {
-        let result = solve_with_file_and_set("2.txt");
+        let stream = io::stdin().lock();
+        let result = solve_with_stream(stream);
 
         match result {
             Ok(value) => value.to_string(),
@@ -23,22 +27,40 @@ impl Solution for Ex2B {
     }
 }
 
-fn solve_with_file_and_set(path: &str) -> Result<u64, String> {
-    let Some(input) = Input::get(path) else {
-        return Err(format!("Could not find file in inputs: {}.", path));
-    };
+struct Input<T: BufRead> {
+    line: String,
+    stream: T
+}
 
-    let input = std::str::from_utf8(input.data.as_ref());
-
-    if input.is_err() {
-        return Err(format!("{:?}", input.unwrap_err()));
+impl<T: BufRead> Input<T> {
+    pub fn new(stream: T) -> Self {
+        Self {
+            stream,
+            line: String::new()
+        }
     }
+}
 
-    input.unwrap()
-        .lines()
-        .map(|line| Game::new(line))
+impl<T: BufRead> Iterator for Input<T> {
+    type Item = Result<Game, String>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.line.clear();
+
+        match self.stream.read_line(&mut self.line) {
+            Ok(0) => None,
+            Ok(_) => Some(Game::new(&self.line)),
+            Err(err) => Some(Err(format!("{:?}", err)))
+        }
+    }
+}
+
+fn solve_with_stream(stream: impl BufRead) -> Result<u64, String> {
+    let input = Input::new(stream);
+
+    input
         .map_ok(|game| game.minimal_set().power())
-        .fold_ok(0, |id, acc| acc + id)
+        .fold_ok(0, Add::add)
 }
 
 #[cfg(test)]
@@ -47,8 +69,13 @@ mod tests {
 
     #[test]
     fn test_solve() {
-        let solution = solve_with_file_and_set("2-example.txt").unwrap();
+        let stream = "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
+Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
+Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
+".as_bytes();
 
-        assert_eq!(solution, 2286);
+        assert_eq!(solve_with_stream(stream).unwrap(), 2286);
     }
 }
