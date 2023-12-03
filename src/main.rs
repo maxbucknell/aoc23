@@ -3,6 +3,8 @@ use clap::{Parser, Subcommand};
 use advent_of_code_2023::Solution;
 use advent_of_code_2023::ex1a::Ex1A;
 use advent_of_code_2023::ex1b::Ex1B;
+use advent_of_code_2023::ex2a::Ex2A;
+use advent_of_code_2023::ex2b::Ex2B;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -14,7 +16,9 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     Ex1a {},
-    Ex1b {}
+    Ex1b {},
+    Ex2a {},
+    Ex2b {}
 }
 
 fn main() {
@@ -26,7 +30,9 @@ fn main() {
 
     let solution: Box<dyn Solution> = match cli.command.unwrap() {
         Commands::Ex1a {} => Box::new(Ex1A::new()),
-        Commands::Ex1b {} => Box::new(Ex1B::new())
+        Commands::Ex1b {} => Box::new(Ex1B::new()),
+        Commands::Ex2a {} => Box::new(Ex2A::new()),
+        Commands::Ex2b {} => Box::new(Ex2B::new())
     };
 
     println!("{}", solution.solve());
