@@ -36,7 +36,6 @@ struct Input<T: BufRead> {
     number_re: Regex,
     symbol_re: Regex,
     counter: usize,
-    counter_r: usize,
     lines: [String; 3],
     stream: T
 }
@@ -46,7 +45,6 @@ impl<T: BufRead> Input<T> {
         let number_re = Regex::new(r"\d+").unwrap();
         let symbol_re = Regex::new(r"[^\d\.]").unwrap();
         let mut result = Self {
-            counter_r: 0,
             counter: 0,
             number_re,
             symbol_re,
@@ -76,8 +74,6 @@ impl<T: BufRead> Iterator for Input<T> {
     type Item = Result<u64, String>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.counter_r += 1;
-
         let prev = &self.lines[(self.counter + 2) % 3];
         let curr = &self.lines[self.counter];
         let next = &self.lines[(self.counter + 1) % 3];

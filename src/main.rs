@@ -6,6 +6,7 @@ use advent_of_code_2023::ex1b::Ex1B;
 use advent_of_code_2023::ex2a::Ex2A;
 use advent_of_code_2023::ex2b::Ex2B;
 use advent_of_code_2023::ex3a::Ex3A;
+use advent_of_code_2023::ex3b::Ex3B;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -20,7 +21,8 @@ enum Commands {
     Ex1b {},
     Ex2a {},
     Ex2b {},
-    Ex3a {}
+    Ex3a {},
+    Ex3b {},
 }
 
 fn main() {
@@ -35,7 +37,8 @@ fn main() {
         Commands::Ex1b {} => Box::new(Ex1B::new()),
         Commands::Ex2a {} => Box::new(Ex2A::new()),
         Commands::Ex2b {} => Box::new(Ex2B::new()),
-        Commands::Ex3a {} => Box::new(Ex3A::new())
+        Commands::Ex3a {} => Box::new(Ex3A::new()),
+        Commands::Ex3b {} => Box::new(Ex3B::new())
     };
 
     println!("{}", solution.solve());
