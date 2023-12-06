@@ -28,6 +28,15 @@ impl Solution for Ex3A {
     }
 }
 
+fn solve_with_stream(stream: impl BufRead) -> Result<u64, String> {
+    let input_result = Input::new(stream);
+
+    match input_result {
+        Ok(mut input) => input.fold_ok(0, Add::add),
+        Err(err) => Err(err)
+    }
+}
+
 /// We need to process the input stream line by line, but we need to look ahead
 /// by one line, and behind by one line, to find adjacent symbols.
 ///
@@ -127,15 +136,6 @@ struct Number {
     value: u64,
     start: usize,
     end: usize,
-}
-
-fn solve_with_stream(stream: impl BufRead) -> Result<u64, String> {
-    let input_result = Input::new(stream);
-
-    match input_result {
-        Ok(mut input) => input.fold_ok(0, Add::add),
-        Err(err) => Err(err)
-    }
 }
 
 impl Number {
